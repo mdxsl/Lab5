@@ -1,0 +1,80 @@
+﻿@page "/books"
+@inject Lab5WebApplication.Services.LibraryService LibraryService
+
+<h3>Manage Books</h3>
+
+<div>
+    <h4>@(isEditing ? "Edit Book": "Add New Book")</h4>
+    <input placeholder="Title" @bind="currentBook.Title" />
+    <input placeholder="Author" @bind="currentBook.Author"/>
+    <input placeholder="ISBN" @bind="currentBook.ISBN"/>
+    <button class="btn btn-primary" @onclick="SaveBook">@(isEditing ? "Update" : "Add")</button>
+    @if (isEditing)
+    {
+        <button class="btn btn-secondary" @onclick="ResetForm">Cancel</button>
+    }
+</div>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var book in books)
+    {
+        <tr>
+            <td>@book.Id</td>
+            <td>@book.Title</td>
+            <td>@book.Author</td>
+            <td>@book.ISBN</td>
+            <td>
+                <button class="btn btn-sm btn-warning" @onclick="() => Edit(book)">Edit</button>
+                <button class="btn btn-sm btn-danger" @onclick="() => Delete(book.Id)">Delete</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<Book> books => LibraryService.GetBooks();
+    private Book currentBook = new();
+    private bool isEditing = false;
+
+    private void SaveBook()
+    {
+        if (isEditing)
+        {
+            LibraryService.EditBook(currentBook);
+            isEditing = false;
+        }
+        else
+        {
+            LibraryService.AddBook(currentBook);
+        }
+        currentBook = new();
+    }
+
+    private void Edit(Book book)
+    {
+        currentBook = new Book { Id = book.Id, Title = book.Title, Author = book.Author, ISBN = book.ISBN };
+        isEditing = true;
+    }
+
+    private void Delete(int id)
+    {
+        LibraryService.DeleteBook(id);
+    }
+
+    private void ResetForm()
+    {
+        currentBook = new();
+        isEditing = false;
+    }
+}

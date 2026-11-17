@@ -1,0 +1,77 @@
+﻿@page "/users"
+@inject Lab5WebApplication.Services.LibraryService LibraryService
+
+<h3>Manage Users</h3>
+
+<div>
+    <h4>@(isEditing ? "Edit User" : "Add New User")</h4>
+    <input placeholder="Name" @bind="currentUser.Name" />
+    <input placeholder="Email" @bind="currentUser.Email" />
+    <button class="btn btn-primary" @onclick="SaveUser">@(isEditing ? "Update" : "Add")</button>
+    @if (isEditing)
+    {
+        <button class="btn btn-secondary" @onclick="ResetForm">Cancel</button>
+    }
+</div>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in users)
+    {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            <td>
+                <button class="btn btn-sm btn-warning" @onclick="() => Edit(user)">Edit</button>
+                <button class="btn btn-sm btn-danger" @onclick="() => Delete(user.Id)">Delete</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<User> users => LibraryService.GetUsers();
+    private User currentUser = new();
+    private bool isEditing = false;
+
+    private void SaveUser()
+    {
+        if (isEditing)
+        {
+            LibraryService.EditUser(currentUser);
+            isEditing = false;
+        }
+        else
+        {
+            LibraryService.AddUser(currentUser);
+        }
+        currentUser = new();
+    }
+
+    private void Edit(User user)
+    {
+        currentUser = new User { Id = user.Id, Name = user.Name, Email = user.Email };
+        isEditing = true;
+    }
+
+    private void Delete(int id)
+    {
+        LibraryService.DeleteUser(id);
+    }
+
+    private void ResetForm()
+    {
+        currentUser = new();
+        isEditing = false;
+    }
+}
