@@ -1,0 +1,24 @@
+name: CI
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
+permissions:
+    contents: read
+jobs:
+    build-and-test:
+        runs-on: ubuntu_latest
+        steps:
+            - name: Check out code 
+              uses: actions/checkout@v7
+            - name: Set up .NET
+              uses: actions/setup-dotnet@v6
+              with:
+                dotnet-version: '10.0.x'
+            - name: Restore
+              run: dotnet restore Lab5/Lab5.slnx
+            - name: Build
+              run: dotnet build Lab5/Lab5.slnx --configuration Release --no-restore
+            - name: Test
+              run: dotnet test Lab5/Lab5.slnx --configuration Release --no-build --verbosity normal
