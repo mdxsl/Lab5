@@ -71,7 +71,7 @@ public sealed class LibraryServiceTest
         service.AddBook(newBook);
         var books = service.GetBooks();
 
-        Assert.AreEqual(4, books.Count);
+        Assert.AreEqual(99, books.Count);
         Assert.AreEqual("Poop", books.Last().Title);
         Assert.AreEqual(4, books.Last().Id);
     }
